@@ -1,0 +1,140 @@
+#!/bin/sh
+# portable script to remedy modern keyboard woes
+
+# - backup existing config first w/ 'xmodmap -pke > ~/.Xmodmap.bak'
+# - if anything goes wrong, restore w/ 'xmodmap ~/.Xmodmap.bak'
+# - to add modification yourself, use 'xmodmap -pke' & 'xev'
+# - to add to startup, run 'xmodmap -pke > ~/.Xmodmap', go to '~/.xinitrc' and
+#   add 'xmodmap ~/.Xmodmap', as well as every 'setxkbmap -option ...', if it
+#   doesn't appear to work on login, see if your DE/WM/LM/DM has a preference
+# - you may use this script as the startup, but its intended for prototyping
+
+# reset keyboard layout for fresh config
+setxkbmap -option
+
+# make caps act as control, and make both shift keys act as caps
+setxkbmap -option "ctrl:nocaps"
+
+# move left control to super key, useful for keys with no left super
+#setxkbmap -option "ctrl:swap_lwin_lctl"
+
+# make right alt an altgr layer
+xmodmap -e "keycode 108 = Mode_switch Mode_switch"
+
+# right super acts as altgr
+xmodmap -e "keycode 134 = Mode_switch Mode_switch"
+
+# make right shift an easier to reach minus & plus key
+xmodmap -e 'keysym Shift_R = minus underscore plus equal'
+
+# number row to function keys, specifically for non FN lock laptops
+xmodmap -e "keycode 10 = 1 exclam exclam F1"
+xmodmap -e "keycode 11 = 2 at at F2"
+xmodmap -e "keycode 12 = 3 numbersign numbersign F3"
+xmodmap -e "keycode 13 = 4 dollar dollar F4"
+xmodmap -e "keycode 14 = 5 percent percent F5"
+xmodmap -e "keycode 15 = 6 asciicircum asciicircum F6"
+xmodmap -e "keycode 16 = 7 ampersand ampersand F7"
+xmodmap -e "keycode 17 = 8 asterisk asterisk F8"
+xmodmap -e "keycode 18 = 9 parenleft parenleft F9"
+xmodmap -e "keycode 19 = 0 parenright parenright F10"
+
+# normal minus & plus signs set to home/end, plus set as backspace
+xmodmap -e "keycode 20 = minus underscore Home Home"
+xmodmap -e "keycode 21 = BackSpace BackSpace End End"
+
+# '[' & ']'  to page down & up
+xmodmap -e "keycode 34 = bracketleft braceleft Down Down"
+xmodmap -e "keycode 35 = bracketright braceright Up Up"
+
+# IJKL to arrow keys like Pok3r
+xmodmap -e "keycode 31 = i I Up Up"
+xmodmap -e "keycode 44 = j J Left Left"
+xmodmap -e "keycode 45 = k K Down Down"
+xmodmap -e "keycode 46 = l L Right Right"
+
+# 'h' to hashtag
+xmodmap -e "keycode 43 = h H numbersign numbersign"
+
+# 'q' to question mark
+xmodmap -e "keycode 24 = q Q question question"
+
+# 'e' & 'y' to escape; quit
+xmodmap -e "keycode 26 = e E Escape Escape"
+
+# 'y' & 'v' to dollar inverse; yen; very cash!
+xmodmap -e "keycode 29 = y Y dollar dollar"
+xmodmap -e "keycode 55 = v V dollar dollar"
+
+# 'w' to colon, vim faster bind b/c ':w' spam i do
+xmodmap -e "keycode 25 = w W colon colon"
+
+# 'r' to equal; right next to e
+xmodmap -e "keycode 27 = r R equal equal"
+
+# 'z' and 't' to tilde
+xmodmap -e "keycode 28 = t T asciitilde grave"
+xmodmap -e "keycode 52 = z Z asciitilde grave"
+
+# 'u' & 'o' to parens
+xmodmap -e "keycode 30 = u U parenleft parenleft"
+xmodmap -e "keycode 32 = o O parenright parenright"
+
+# 'p' to percent
+xmodmap -e "keycode 33 = p P percent percent"
+
+# 'a' to ampersand
+xmodmap -e "keycode 38 = a A ampersand ampersand"
+
+# 's' to at; address S domain... asd... a@d
+xmodmap -e "keycode 39 = s S at at"
+
+# 'd' to delete
+xmodmap -e "keycode 40 = d D Delete Delete"
+
+# 'f' to tab; forward
+xmodmap -e "keycode 41 = f F Tab Tab"
+
+# 'g' to grave
+xmodmap -e "keycode 42 = g G grave grave"
+
+# ';' to shifted
+xmodmap -e "keycode 47 = semicolon colon colon colon"
+
+# ''' to shifted key version for one hand
+xmodmap -e "keycode 48 = apostrophe quotedbl quotedbl quotedbl"
+
+# '\' to shifted version
+xmodmap -e "keycode  51 = backslash bar bar bar"
+
+# 'x' to exclamation point inverse; eXclamation
+xmodmap -e "keycode 53 = x X exclam exclam"
+
+# 'c' to caret inverse
+xmodmap -e "keycode 54 = c C asciicircum asciicircum"
+
+# 'b' to backslash
+xmodmap -e "keycode 56 = b B backslash backslash"
+
+# 'n' '.' to faster </>
+xmodmap -e "keycode 57 = n N less less"
+xmodmap -e "keycode 60 = period greater greater greater"
+
+# 'm' ',' to faster [] / {}
+xmodmap -e "keycode 58 = m M bracketleft braceleft"
+xmodmap -e "keycode 59 = comma less bracketright braceright"
+
+# '?' to shift inverse
+xmodmap -e "keycode 61 = slash question question slash"
+
+# 'ins' and 'del' are backspace unless shifted or alted
+xmodmap -e "keycode 90 = BackSpace KP_Insert KP_Insert KP_0"
+#xmodmap -e "keycode 91 = BackSpace KP_Delete KP_Delete KP_Decimal"
+xmodmap -e "keycode 118 = BackSpace Insert Insert Insert"
+#xmodmap -e "keycode 119 = BackSpace Delete Delete Delete"
+
+# remove shift keys
+xmodmap -e 'clear Shift'
+xmodmap -e 'add Shift = Shift_L'
+
+exit 0

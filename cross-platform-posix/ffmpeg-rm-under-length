@@ -1,0 +1,49 @@
+#!/bin/sh
+# input longest time (seconds) to erase, then input file
+# intended to be used w/ 'find . type -f -exec SCRIPT_NAME TIME {} \;' 
+# checks if file is real, is able to get a time, and audio codec type
+# SHOULD be safe w/ all three checks, but exercise extreme caution anyways
+
+# printf colors
+ansi_red=$'\e[1;31m'
+ansi_green=$'\e[1;32m'
+ansi_purple=$'\e[1;35m'
+ansi_clear=$'\e[0m'
+
+# input values
+lessThan="$(printf "$1" | tr -d '[:space]')" # trims spaces
+file="$2" 
+
+# check if file is real; if is then get length of time
+if [ -f "$file" ]; then  
+  type="$(ffprobe -v error -select_streams a -show_entries \
+    stream=codec_name -of default=noprint_wrappers=1 "$file")" 
+else
+  printf "%sError! File '%s' does not exist!%s\n" \
+  "$ansi_red" "$file" "$ansi_clear"
+  exit
+fi
+
+# check if ffprobe detects an audio codec and convert length to integer
+# time is detected on all files b/c legacy oddities, which is why checked
+if [ -z "$type" ]; then
+  printf "%sError! File '%s' either silent video OR not an A/V file!%s\n" \
+    "$ansi_red" "$file" "$ansi_clear"
+  exit
+else
+  fileLength="$(ffprobe -v error -show_entries format=duration \
+    -of default=noprint_wrappers=1:nokey=1 "$file")"
+  fileLengthInt="$(echo "("$fileLength"+0.5)/1" | bc)"
+fi
+
+# if VAL > INPUT, then keep. If not, delete $FILE
+if [ "$fileLengthInt" -gt "$lessThan" ]; then
+  printf "%s%s%s is longer than %s seconds! (SS=%s)\n" \
+  "$ansi_green" "$file" "$ansi_clear" "$lessThan" "$fileLengthInt"
+else
+  rm "$file"
+  printf "%sDeleted %s%s%s: %s seconds or shorter! (SS=%s)\n" \
+  "$ansi_red" "$ansi_purple" "$file" "$ansi_clear" \
+  "$lessThan" "$fileLengthInt"
+fi
+exit
